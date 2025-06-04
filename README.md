@@ -26,13 +26,17 @@ pip install -r requirements.txt
 
 Run the analysis script from the command line. The following example fetches
 data for Apple (AAPL) between January and December 2023 and prints the latest
-rows including indicators:
+rows including indicators. You can also compute a short-term score (1-100)
+combining several technical and fundamental metrics:
 
 ```bash
 python stock_analysis.py AAPL --start 2023-01-01 --end 2023-12-31
 
 # save results to CSV
 python stock_analysis.py AAPL --start 2023-01-01 --end 2023-12-31 --csv aapl.csv
+
+# print short-term score
+python stock_analysis.py AAPL --start 2023-01-01 --end 2023-12-31 --score
 ```
 
 The module can also be imported in your own scripts to fetch data and compute
