@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import os
+from datetime import datetime
+from typing import Dict, Optional
+
 import pandas as pd
-import yfinance as yf
-from typing import Dict
+from polygon import RESTClient
 
 
 class DownloadError(Exception):
@@ -12,17 +15,34 @@ class DownloadError(Exception):
     pass
 
 
-def fetch_data(ticker: str, start: str, end: str) -> pd.DataFrame:
-    """Download historical OHLC data for a ticker between dates."""
+def fetch_data(ticker: str, start: str, end: str, api_key: Optional[str] = None) -> pd.DataFrame:
+    """Download historical OHLC data for a ticker between dates using Polygon."""
+    key = api_key or os.getenv("POLYGON_API_KEY")
+    client = RESTClient(key)
+
     try:
-        df = yf.download(ticker, start=start, end=end)
+        aggs = client.get_aggs(ticker, 1, "day", start, end, limit=50000)
     except Exception as exc:
         raise DownloadError(f"Failed to download data for {ticker}: {exc}") from exc
 
-    if df.empty:
-        raise DownloadError(f"No data returned for {ticker}. Check ticker symbol or network access.")
+    if not aggs:
+        raise DownloadError(
+            f"No data returned for {ticker}. Check ticker symbol or network access."
+        )
 
-    df.index.name = "Date"
+    rows = [
+        {
+            "Date": datetime.fromtimestamp(a.timestamp / 1000.0),
+            "Open": a.open,
+            "High": a.high,
+            "Low": a.low,
+            "Close": a.close,
+            "Volume": a.volume,
+        }
+        for a in aggs
+    ]
+    df = pd.DataFrame(rows).set_index("Date")
+    df.index = pd.to_datetime(df.index)
     return df
 
 
@@ -61,21 +81,16 @@ def analyze_ticker(ticker: str, start: str, end: str) -> pd.DataFrame:
 
 
 def fetch_fundamentals(ticker: str) -> Dict[str, float]:
-    """Return a dictionary with basic fundamental metrics using yfinance."""
-    info = {}
-    try:
-        info = yf.Ticker(ticker).info
-    except Exception:
-        # Ignore errors and return empty dict
-        return {}
+    """Return a dictionary with basic fundamental metrics using Polygon.
 
-    keys = [
-        "trailingPE",
-        "earningsQuarterlyGrowth",
-        "debtToEquity",
-        "revenueQuarterlyGrowth",
-    ]
-    return {k: info.get(k) for k in keys if k in info}
+    The Polygon API does not currently expose all of the fundamental fields
+    used by :func:`compute_score`, so this function returns an empty dictionary
+    as a placeholder. Implementations that require fundamental data should query
+    the appropriate Polygon endpoints and populate the returned mapping.
+    """
+
+    _ = ticker  # unused for now
+    return {}
 
 
 def compute_score(df: pd.DataFrame, fundamentals: Dict[str, float]) -> float:

@@ -1,15 +1,16 @@
 import pandas as pd
-import numpy as np 
-import matplotlib.pyplot as plt 
-import yfinance as yf 
+import numpy as np
+import matplotlib.pyplot as plt
+
+from stock_analysis import fetch_data
  
 ticker_symbol1 = 'TSLA'
 ticker_symbol2 = 'AAPL'
 start_date = '2023-01-01'
 end_date = '2023-12-15'
 
-stock_data1 = yf.download(ticker_symbol1, start=start_date, end=end_date)
-stock_data2 = yf.download(ticker_symbol2, start=start_date, end=end_date)
+stock_data1 = fetch_data(ticker_symbol1, start=start_date, end=end_date)
+stock_data2 = fetch_data(ticker_symbol2, start=start_date, end=end_date)
 
 #data inspection and cleaning
 print(stock_data1.head())

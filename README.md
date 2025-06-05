@@ -1,9 +1,10 @@
 # Stock Market Analysis Tool
 
 This repository contains simple utilities for downloading historical stock
-prices and computing common technical indicators. It relies on the
-[yfinance](https://github.com/ranaroussi/yfinance) package to access data
-from Yahoo Finance.
+prices and computing common technical indicators. Data is now fetched via the
+[Polygon.io](https://polygon.io/) API using the `polygon` client. Set the
+`POLYGON_API_KEY` environment variable with your API key before running the
+tools.
 
 ## Features
 

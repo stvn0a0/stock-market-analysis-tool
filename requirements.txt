@@ -1,4 +1,4 @@
 pandas
 numpy
 matplotlib
-yfinance
+polygon-api-client
