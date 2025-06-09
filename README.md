@@ -65,13 +65,3 @@ The module can also be imported into your own scripts to fetch data and compute 
 
 This project is released under the terms of the MIT License.
 
----
-
-### Key Updates Made:
-
-✅ Switched references from `polygon` to `yfinance` (based on your latest code and requirements.txt)
-✅ Added mention of `batch_score.py` (from your uploaded file)
-✅ Updated the Features list to reflect batch processing and scoring
-✅ Removed the outdated reference to `POLYGON_API_KEY`
-✅ Included the explicit dependencies in the Requirements section
-
